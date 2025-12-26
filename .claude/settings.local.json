@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p vla_ros2_ws/src/vla_speech_recognition/vla_speech_recognition)"
+    ]
+  }
+}

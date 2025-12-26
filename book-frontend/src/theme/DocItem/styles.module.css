@@ -1,0 +1,96 @@
+.docItemCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.docItemContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--ifm-spacing-6) var(--ifm-spacing-4);
+  background-color: var(--ifm-color-background);
+  border-radius: var(--ifm-spacing-2);
+  box-shadow: var(--ifm-shadow);
+}
+
+.docHeader {
+  margin-bottom: var(--ifm-spacing-6);
+  padding-bottom: var(--ifm-spacing-4);
+  border-bottom: 1px solid var(--ifm-color-border);
+}
+
+.docTitle {
+  font-size: var(--ifm-h1-font-size);
+  font-weight: var(--ifm-font-weight-bold);
+  color: var(--ifm-color-text);
+  margin: 0;
+}
+
+.docItemContent {
+  margin-bottom: var(--ifm-spacing-8);
+}
+
+.docFooter {
+  border-top: 1px solid var(--ifm-color-border);
+  padding-top: var(--ifm-spacing-6);
+}
+
+.tableOfContents {
+  position: sticky;
+  top: var(--ifm-navbar-height);
+  align-self: flex-start;
+  max-height: calc(100vh - var(--ifm-navbar-height));
+  overflow-y: auto;
+  padding: var(--ifm-spacing-4) 0;
+}
+
+.tableOfContentsContent {
+  background-color: var(--ifm-color-background-alt);
+  border-radius: var(--ifm-spacing-2);
+  padding: var(--ifm-spacing-4);
+  border: 1px solid var(--ifm-color-border);
+}
+
+.tocTitle {
+  font-size: var(--ifm-font-size-lg);
+  font-weight: var(--ifm-font-weight-semibold);
+  margin: 0 0 var(--ifm-spacing-3) 0;
+  color: var(--ifm-color-text);
+}
+
+.tocNav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ifm-spacing-2);
+}
+
+.tocItem {
+  margin: 0;
+}
+
+.tocLink {
+  display: block;
+  padding: var(--ifm-spacing-2) var(--ifm-spacing-3);
+  text-decoration: none;
+  color: var(--ifm-color-text-secondary);
+  border-radius: var(--ifm-spacing-1);
+  transition: var(--ifm-transition-colors);
+  font-size: var(--ifm-font-size-sm);
+}
+
+.tocLink:hover {
+  background-color: var(--ifm-color-primary-lightest);
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+.tocLinkActive {
+  background-color: var(--ifm-color-primary-lighter);
+  color: var(--ifm-color-primary-darker);
+  font-weight: var(--ifm-font-weight-semibold);
+}
+
+@media (max-width: 996px) {
+  .tableOfContents {
+    display: none;
+  }
+}

@@ -1,0 +1,236 @@
+# Simulation Interfaces Contract for Module 2: The Digital Twin (Gazebo & Unity)
+
+# This document defines the interfaces (topics, services, actions) and data structures
+# that will be used in the educational examples for Gazebo and Unity simulation
+
+## ROS 2 Topics for Gazebo Integration
+
+### Robot State Topics
+- **/robot/joint_states**
+  - Type: sensor_msgs/JointState
+  - Description: Current joint positions, velocities, and efforts
+  - Publisher: robot_state_publisher or Gazebo plugin
+  - Subscribers: Visualization tools, controllers, monitoring nodes
+
+- **/robot/odom**
+  - Type: nav_msgs/Odometry
+  - Description: Robot odometry data (position, velocity, and covariance)
+  - Publisher: Robot odometry plugin in Gazebo
+  - Subscribers: Localization and navigation nodes
+
+- **/robot/tf** and **/robot/tf_static**
+  - Type: tf2_msgs/TFMessage
+  - Description: Transform tree for robot coordinate frames
+  - Publisher: robot_state_publisher
+  - Subscribers: All nodes requiring coordinate transforms
+
+### Sensor Topics
+- **/robot/lidar_scan**
+  - Type: sensor_msgs/LaserScan
+  - Description: 2D LiDAR scan data
+  - Publisher: Gazebo LiDAR plugin
+  - Subscribers: Perception and navigation nodes
+
+- **/robot/depth_camera/depth/image_raw**
+  - Type: sensor_msgs/Image
+  - Description: Raw depth image from simulated camera
+  - Publisher: Gazebo depth camera plugin
+  - Subscribers: Perception and computer vision nodes
+
+- **/robot/depth_camera/rgb/image_raw**
+  - Type: sensor_msgs/Image
+  - Description: RGB image from simulated camera
+  - Publisher: Gazebo depth camera plugin
+  - Subscribers: Perception and computer vision nodes
+
+- **/robot/imu/data**
+  - Type: sensor_msgs/Imu
+  - Description: Inertial measurement unit data (orientation, angular velocity, linear acceleration)
+  - Publisher: Gazebo IMU plugin
+  - Subscribers: State estimation and control nodes
+
+### Control Topics
+- **/robot/cmd_vel**
+  - Type: geometry_msgs/Twist
+  - Description: Velocity commands for robot base
+  - Publisher: Navigation or teleoperation nodes
+  - Subscribers: Robot velocity controller
+
+- **/robot/joint_commands**
+  - Type: trajectory_msgs/JointTrajectory
+  - Description: Joint position/velocity/effort commands
+  - Publisher: Motion planning nodes
+  - Subscribers: Robot joint controllers
+
+## Gazebo Services
+
+### World Control Services
+- **/world/reset**
+  - Type: std_srvs/Empty
+  - Description: Reset the simulation world to initial state
+
+- **/world/pause**
+  - Type: std_srvs/Empty
+  - Description: Pause the physics simulation
+
+- **/world/unpause**
+  - Type: std_srvs/Empty
+  - Description: Resume the physics simulation
+
+- **/world/set_physics_properties**
+  - Type: gazebo_msgs/SetPhysicsProperties
+  - Description: Modify physics parameters during simulation
+
+### Model Services
+- **/gazebo/spawn_sdf_model**
+  - Type: gazebo_msgs/SpawnModel
+  - Description: Spawn a new model in the simulation
+
+- **/gazebo/delete_model**
+  - Type: gazebo_msgs/DeleteModel
+  - Description: Remove a model from the simulation
+
+- **/gazebo/get_model_state**
+  - Type: gazebo_msgs/GetModelState
+  - Description: Get current state of a specific model
+
+## Unity Communication Interfaces
+
+### Unity-ROS Bridge Topics
+- **/unity/robot_state**
+  - Type: sensor_msgs/JointState
+  - Description: Robot state for Unity visualization
+  - Publisher: Bridge node
+  - Subscribers: Unity ROS TCP connector
+
+- **/unity/visualization_marker**
+  - Type: visualization_msgs/Marker
+  - Description: Visualization markers for Unity
+  - Publisher: ROS nodes
+  - Subscribers: Unity visualization system
+
+### Unity Custom Topics
+- **/unity/human_interaction**
+  - Type: std_msgs/String
+  - Description: Human-robot interaction commands from Unity UI
+  - Publisher: Unity interaction system
+  - Subscribers: Robot command processors
+
+- **/unity/digital_twin_sync**
+  - Type: geometry_msgs/PoseStamped
+  - Description: Synchronization data between Gazebo and Unity
+  - Publisher: Bridge node
+  - Subscribers: Digital twin synchronization system
+
+## SDF (Simulation Description Format) Structure
+
+### World File Structure
+```
+World:
+  - name: string
+  - gravity: Vector3 [x, y, z]
+  - physics: PhysicsProperties
+  - models: list<Model>
+  - lights: list<Light>
+  - plugins: list<Plugin>
+```
+
+### Model Structure
+```
+Model:
+  - name: string
+  - pose: Pose [x, y, z, roll, pitch, yaw]
+  - links: list<Link>
+  - joints: list<Joint>
+  - plugins: list<Plugin>
+```
+
+### Link Structure
+```
+Link:
+  - name: string
+  - inertial: InertialProperties
+  - visual: VisualProperties
+  - collision: CollisionProperties
+  - sensors: list<Sensor>
+```
+
+### Sensor Structure
+```
+Sensor:
+  - name: string
+  - type: SensorType (camera, depth, lidar, imu, etc.)
+  - pose: Pose
+  - topic: string
+  - update_rate: float
+  - sensor_specific_params: map<string, value>
+```
+
+## Unity Asset Structure
+
+### GameObject Components
+- **RobotBase**: Contains main robot body and coordinate frame
+- **JointControllers**: Scripts to control robot joint positions
+- **SensorVisualizers**: Components to visualize sensor data
+- **InteractionHandlers**: Scripts to handle human-robot interaction
+- **SynchronizationManager**: Component to sync with Gazebo simulation
+
+### Scene Structure
+```
+DigitalTwinScene:
+  - RobotModels: Container for all robot GameObjects
+  - Environment: Static environment objects
+  - Lighting: Scene lighting setup
+  - Cameras: Multiple camera angles for visualization
+  - UI: User interface elements for interaction
+```
+
+## Data Synchronization Protocol
+
+### Gazebo-Unity Sync Message
+```
+SyncMessage:
+  - timestamp: float64
+  - simulation_time: float64
+  - robot_states: map<string, RobotState>
+  - sensor_data: map<string, SensorData>
+  - environment_state: EnvironmentState
+```
+
+### RobotState Structure
+```
+RobotState:
+  - joint_positions: map<string, float64>
+  - joint_velocities: map<string, float64>
+  - pose: Pose
+  - velocity: Twist
+```
+
+### SensorData Structure
+```
+SensorData:
+  - sensor_type: SensorType
+  - data: bytes (serialized sensor data)
+  - frame_id: string
+  - timestamp: float64
+```
+
+## Quality of Service (QoS) Profiles
+
+### Simulation Data Profile
+- **Reliability**: Reliable for critical control data
+- **Durability**: Volatile for sensor streams
+- **History**: Keep last N messages (N varies by topic)
+- **Depth**: 10 for most topics, 100 for critical control
+
+### Visualization Profile
+- **Reliability**: Best effort (can drop frames)
+- **Durability**: Volatile
+- **History**: Keep last 1
+- **Depth**: 1
+
+### Control Profile
+- **Reliability**: Reliable
+- **Durability**: Volatile
+- **History**: Keep last 1
+- **Depth**: 1

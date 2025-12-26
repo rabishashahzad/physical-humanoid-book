@@ -1,0 +1,114 @@
+# ROS 2 Interfaces Contract for Module 1: Robotic Nervous System
+
+# This document defines the ROS 2 interfaces (topics, services, actions)
+# that will be used in the educational examples for this module
+
+## Topics
+
+### /robot/joint_states
+- **Type**: sensor_msgs/JointState
+- **Description**: Publishes current joint positions, velocities, and efforts for the humanoid robot
+- **Publisher**: robot_state_publisher or joint_state_publisher
+- **Subscribers**: Visualization tools, controllers, monitoring nodes
+
+### /cmd_vel
+- **Type**: geometry_msgs/Twist
+- **Description**: Commands for robot base movement (linear and angular velocity)
+- **Publisher**: Controller nodes
+- **Subscribers**: Robot base controller
+
+### /chatter
+- **Type**: std_msgs/String
+- **Description**: Simple example topic for publisher/subscriber tutorial
+- **Publisher**: Publisher tutorial nodes
+- **Subscribers**: Subscriber tutorial nodes
+
+## Services
+
+### /add_two_ints
+- **Type**: example_interfaces/AddTwoInts
+- **Description**: Example service for service/client tutorial
+- **Server**: Service tutorial node
+- **Clients**: Client tutorial nodes
+- **Request**: a (int64), b (int64)
+- **Response**: sum (int64)
+
+### /set_parameters
+- **Type**: rcl_interfaces/SetParameters
+- **Description**: Service for dynamically setting node parameters
+- **Server**: Parameter-enabled nodes
+- **Request**: parameters (list of Parameter)
+- **Response**: results (list of SetParametersResult)
+
+## Actions (Optional - Advanced Topic)
+
+### /move_humanoid
+- **Type**: custom action (not standard)
+- **Description**: Action for moving humanoid joints to specific positions
+- **Goal**: target_joint_positions (list of float)
+- **Feedback**: current_joint_positions (list of float)
+- **Result**: success (bool), error_message (string)
+
+## Custom Message Types (if needed)
+
+### HumanoidCommand.msg
+```
+# Command for controlling humanoid robot joints
+string[] joint_names
+float64[] positions
+float64[] velocities
+float64[] efforts
+---
+bool success
+string error_message
+```
+
+### HumanoidState.msg
+```
+# State of the humanoid robot
+string[] joint_names
+float64[] positions
+float64[] velocities
+float64[] efforts
+geometry_msgs/Pose base_pose
+---
+bool valid
+string error_message
+```
+
+## URDF/XACRO Files
+
+### simple_humanoid.urdf / simple_humanoid.xacro
+- **Description**: Basic humanoid robot model with links and joints
+- **Links**: base_link, torso, head, arms, legs
+- **Joints**: revolute joints for movement, fixed joints for structure
+- **Materials**: Defined colors and visual properties
+- **Sensors**: Basic sensor definitions (IMU, camera positions)
+
+## Parameter Definitions
+
+### Common Parameters
+- **robot_description**: URDF string for robot model
+- **use_sim_time**: Boolean for simulation vs real robot
+- **publish_frequency**: Rate for publishing joint states (Hz)
+- **tf_prefix**: Prefix for TF frame names
+
+## Quality of Service (QoS) Profiles
+
+### Default Profile
+- **Reliability**: Reliable
+- **Durability**: Volatile
+- **History**: Keep last 10
+- **Depth**: 10
+
+### Sensor Profile
+- **Reliability**: Best effort (for sensor data)
+- **Durability**: Volatile
+- **History**: Keep last 1
+- **Depth**: 1
+
+### Command Profile
+- **Reliability**: Reliable
+- **Durability**: Volatile
+- **History**: Keep last 1
+- **Depth**: 1

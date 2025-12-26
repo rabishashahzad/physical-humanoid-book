@@ -1,0 +1,690 @@
+openapi: 3.0.3
+info:
+  title: Book RAG Chatbot API
+  description: API for the Book RAG Chatbot with Translation feature
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: https://staging-api.example.com/v1
+    description: Staging server
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      description: Creates a new user account with BetterAuth or equivalent
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        '201':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /auth/login:
+    post:
+      summary: User login
+      description: Authenticates a user and returns session tokens
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: User successfully authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      summary: User logout
+      description: Invalidates the current user session
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully logged out
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /books:
+    get:
+      summary: List available books
+      description: Returns a list of books the user has access to
+      tags:
+        - Books
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of books
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  books:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Book'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /books/{bookId}:
+    get:
+      summary: Get book details
+      description: Returns details about a specific book
+      tags:
+        - Books
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The book ID
+      responses:
+        '200':
+          description: Book details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /chat/{bookId}/sessions:
+    get:
+      summary: List chat sessions for a book
+      description: Returns a list of chat sessions for a specific book
+      tags:
+        - Chat
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The book ID
+      responses:
+        '200':
+          description: List of chat sessions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChatSession'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      summary: Create a new chat session
+      description: Creates a new chat session for a book
+      tags:
+        - Chat
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The book ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChatSessionRequest'
+      responses:
+        '201':
+          description: Chat session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatSession'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /chat/sessions/{sessionId}:
+    get:
+      summary: Get chat session details
+      description: Returns details of a specific chat session
+      tags:
+        - Chat
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The chat session ID
+      responses:
+        '200':
+          description: Chat session details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatSession'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Update chat session
+      description: Updates properties of a chat session
+      tags:
+        - Chat
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The chat session ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateChatSessionRequest'
+      responses:
+        '200':
+          description: Chat session updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatSession'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /chat/sessions/{sessionId}/messages:
+    get:
+      summary: Get messages in a chat session
+      description: Returns all messages in a specific chat session
+      tags:
+        - Chat
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The chat session ID
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+            maximum: 100
+          description: Maximum number of messages to return
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+          description: Number of messages to skip
+      responses:
+        '200':
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Message'
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /chat/sessions/{sessionId}/query:
+    post:
+      summary: Submit a query to the RAG system
+      description: Sends a question to the RAG system and gets a response
+      tags:
+        - Chat
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The chat session ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+      responses:
+        '200':
+          description: Query response from the RAG system
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          description: Query could not be answered from book content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnanswerableResponse'
+
+  /translate:
+    post:
+      summary: Translate text between English and Urdu
+      description: Translates text from English to Urdu or vice versa
+      tags:
+        - Translation
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TranslationRequest'
+      responses:
+        '200':
+          description: Translated text
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserRegistration:
+      type: object
+      required:
+        - email
+        - password
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        password:
+          type: string
+          format: password
+          minLength: 8
+          description: User's password
+        name:
+          type: string
+          maxLength: 255
+          description: User's display name
+        preferences:
+          $ref: '#/components/schemas/UserPreferences'
+
+    UserLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    LoginResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserResponse'
+        access_token:
+          type: string
+          description: JWT access token
+        refresh_token:
+          type: string
+          description: JWT refresh token
+
+    UserPreferences:
+      type: object
+      properties:
+        language:
+          type: string
+          default: 'en'
+          enum: [en, ur]
+          description: Preferred language (English or Urdu)
+
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 500
+        author:
+          type: string
+          maxLength: 255
+        isbn:
+          type: string
+          pattern: '^(?:\\d{10}|\\d{13})$'
+        language:
+          type: string
+          default: 'en'
+          description: Primary language of the book
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ChatSession:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        knowledge_base_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 255
+        context_mode:
+          type: string
+          enum: [entire_book, selected_text_only]
+          default: entire_book
+        selected_text_context:
+          type: string
+          description: Text context when in 'selected_text_only' mode
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        is_active:
+          type: boolean
+          default: true
+
+    CreateChatSessionRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        context_mode:
+          type: string
+          enum: [entire_book, selected_text_only]
+          default: entire_book
+        selected_text:
+          type: string
+          description: Initial selected text for 'selected_text_only' mode
+
+    UpdateChatSessionRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        context_mode:
+          type: string
+          enum: [entire_book, selected_text_only]
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        chat_session_id:
+          type: string
+          format: uuid
+        sender_type:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+        language:
+          type: string
+          enum: [en, ur]
+          default: en
+        translated_content:
+          type: string
+          description: Content translated to the other language
+        retrieved_chunks:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: IDs of book content chunks used for response
+        created_at:
+          type: string
+          format: date-time
+
+    QueryRequest:
+      type: object
+      required:
+        - question
+      properties:
+        question:
+          type: string
+          description: The question to ask the RAG system
+        language:
+          type: string
+          enum: [en, ur]
+          default: en
+          description: The language of the question
+        translate_response:
+          type: boolean
+          default: false
+          description: Whether to translate the response to the other language
+
+    QueryResponse:
+      type: object
+      properties:
+        answer:
+          type: string
+          description: The answer from the RAG system
+        language:
+          type: string
+          enum: [en, ur]
+          description: The language of the response
+        source_chunks:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: IDs of book content chunks used to generate the answer
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Confidence score of the answer
+
+    UnanswerableResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: The standard response when answer not found in book
+          example: "یہ معلومات کتاب میں موجود نہیں ہے۔"
+        reason:
+          type: string
+          description: Explanation for why the query is unanswerable
+
+    TranslationRequest:
+      type: object
+      required:
+        - text
+        - target_language
+      properties:
+        text:
+          type: string
+          description: The text to translate
+        target_language:
+          type: string
+          enum: [en, ur]
+          description: The language to translate to
+        source_language:
+          type: string
+          enum: [en, ur]
+          description: The language of the source text (optional, auto-detected if not provided)
+
+    TranslationResponse:
+      type: object
+      properties:
+        original_text:
+          type: string
+        translated_text:
+          type: string
+        source_language:
+          type: string
+          enum: [en, ur]
+        target_language:
+          type: string
+          enum: [en, ur]
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Conflict - resource already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: string
+          description: Error code
+        details:
+          type: object
+          description: Additional error details
+
+security:
+  - bearerAuth: []

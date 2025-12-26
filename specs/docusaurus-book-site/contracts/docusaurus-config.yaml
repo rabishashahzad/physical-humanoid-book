@@ -1,0 +1,134 @@
+# Docusaurus Configuration Contract
+
+# This document defines the required configuration elements
+# for the Docusaurus book site with Module 1 content
+
+## Site Metadata
+siteConfig:
+  title: "Robotics Education Book"
+  tagline: "Learning ROS 2, Python integration, and humanoid robotics"
+  url: "https://your-username.github.io"
+  baseUrl: "/docusaurus-book/"
+  organizationName: "your-username"
+  projectName: "docusaurus-book"
+  deploymentBranch: "gh-pages"
+  trailingSlash: false
+  onBrokenLinks: "throw"
+  onBrokenMarkdownLinks: "warn"
+  favicon: "img/favicon.ico"
+
+## Preset Configuration
+presets:
+  - name: "@docusaurus/preset-classic"
+    options:
+      docs:
+        sidebarPath: require.resolve("./sidebars.js")
+        editUrl: "https://github.com/your-username/docusaurus-book/edit/main/"
+        showLastUpdateTime: true
+        showLastUpdateAuthor: true
+      blog:
+        showReadingTime: true
+        editUrl: "https://github.com/your-username/docusaurus-book/edit/main/blog/"
+      theme:
+        customCss: require.resolve("./src/css/custom.css")
+
+## Theme Configuration
+themeConfig:
+  navbar:
+    title: "Robotics Education Book"
+    logo:
+      alt: "Robotics Logo"
+      src: "img/logo.svg"
+    items:
+      - type: "docSidebar"
+        sidebarId: "tutorialSidebar"
+        position: "left"
+        label: "Book"
+      - to: "/blog"
+        label: "Blog"
+        position: "left"
+      - href: "https://github.com/your-username/docusaurus-book"
+        label: "GitHub"
+        position: "right"
+  footer:
+    style: "dark"
+    links:
+      - title: "Docs"
+        items:
+          - label: "Introduction"
+            to: "/docs/intro"
+          - label: "Module 1: Robotic Nervous System"
+            to: "/docs/module-1-robotic-nervous-system"
+    copyright: "Copyright © 2025 Your Name. Built with Docusaurus."
+
+## Markdown Extensions
+remarkPlugins:
+  - require('@docusaurus/remark-plugin-npm2yarn')
+rehypePlugins: []
+
+## Prism Configuration (for code blocks)
+prism:
+  additionalLanguages:
+    - python
+    - bash
+    - xml
+    - yaml
+
+## Module 1 Content Structure
+module1Structure:
+  directory: "docs/module-1-robotic-nervous-system"
+  files:
+    - id: "module-1-index"
+      path: "docs/module-1-robotic-nervous-system/index.md"
+      title: "Module 1: Robotic Nervous System (ROS 2)"
+      sidebar_position: 1
+    - id: "chapter-1-ros2-basics"
+      path: "docs/module-1-robotic-nervous-system/chapter-1-ros2-basics.md"
+      title: "Chapter 1 - ROS 2 Basics"
+      sidebar_position: 2
+    - id: "chapter-2-python-ros2"
+      path: "docs/module-1-robotic-nervous-system/chapter-2-python-ros2.md"
+      title: "Chapter 2 - Python & ROS 2"
+      sidebar_position: 3
+    - id: "chapter-3-urdf-modeling"
+      path: "docs/module-1-robotic-nervous-system/chapter-3-urdf-modeling.md"
+      title: "Chapter 3 - URDF Modeling"
+      sidebar_position: 4
+
+## Sidebar Configuration
+sidebarStructure:
+  tutorialSidebar:
+    - id: "intro"
+      type: "doc"
+      label: "Introduction"
+    - id: "module-1-category"
+      type: "category"
+      label: "Module 1: Robotic Nervous System (ROS 2)"
+      items:
+        - id: "module-1-index"
+          type: "doc"
+          label: "Module Overview"
+        - id: "chapter-1-ros2-basics"
+          type: "doc"
+          label: "Chapter 1 - ROS 2 Basics"
+        - id: "chapter-2-python-ros2"
+          type: "doc"
+          label: "Chapter 2 - Python & ROS 2"
+        - id: "chapter-3-urdf-modeling"
+          type: "doc"
+          label: "Chapter 3 - URDF Modeling"
+
+## Build Configuration
+buildConfig:
+  outputDirectory: "build"
+  minify: true
+  generateExtraJs: false
+  generateExtraHtml: false
+
+## Development Configuration
+devConfig:
+  port: 3000
+  host: "localhost"
+  open: true
+  hotOnly: false
+  writeToDisk: false

@@ -1,0 +1,338 @@
+# Isaac Interfaces Contract for Module 3: AI-Robot Brain (NVIDIA Isaac)
+
+# This document defines the interfaces (topics, services, actions) and data structures
+# that will be used in the educational examples for Isaac Sim, Isaac ROS, and Nav2
+
+## ROS 2 Topics for Isaac Integration
+
+### Isaac Sim Bridge Topics
+- **/isaac_sim/bridge/robot_state**
+  - Type: nav_msgs/Odometry
+  - Description: Robot state from Isaac Sim simulation
+  - Publisher: Isaac Sim bridge
+  - Subscribers: State estimation and control nodes
+
+- **/isaac_sim/bridge/tf** and **/isaac_sim/bridge/tf_static**
+  - Type: tf2_msgs/TFMessage
+  - Description: Transform tree from Isaac Sim
+  - Publisher: Isaac Sim bridge
+  - Subscribers: All nodes requiring coordinate transforms
+
+### Isaac ROS Perception Topics
+- **/isaac_ros/image_rect**
+  - Type: sensor_msgs/Image
+  - Description: Rectified camera image from Isaac ROS
+  - Publisher: Isaac ROS image rectification node
+  - Subscribers: Perception and VSLAM nodes
+
+- **/isaac_ros/camera_info_rect**
+  - Type: sensor_msgs/CameraInfo
+  - Description: Rectified camera information
+  - Publisher: Isaac ROS image rectification node
+  - Subscribers: VSLAM and other perception nodes
+
+- **/isaac_ros/visual_slam/pose**
+  - Type: geometry_msgs/PoseStamped
+  - Description: Estimated pose from Isaac ROS VSLAM
+  - Publisher: Isaac ROS Visual SLAM node
+  - Subscribers: Navigation and localization nodes
+
+- **/isaac_ros/visual_slam/path**
+  - Type: nav_msgs/Path
+  - Description: Path estimated by Isaac ROS VSLAM
+  - Publisher: Isaac ROS Visual SLAM node
+  - Subscribers: Mapping and visualization nodes
+
+- **/isaac_ros/visual_slam/map**
+  - Type: nav_msgs/OccupancyGrid
+  - Description: Map created by Isaac ROS VSLAM
+  - Publisher: Isaac ROS Visual SLAM node
+  - Subscribers: Mapping and navigation nodes
+
+### Isaac ROS Sensor Topics
+- **/isaac_ros/imu**
+  - Type: sensor_msgs/Imu
+  - Description: IMU data from Isaac Sim through Isaac ROS
+  - Publisher: Isaac ROS IMU processing node
+  - Subscribers: State estimation and VSLAM nodes
+
+- **/isaac_ros/pointcloud**
+  - Type: sensor_msgs/PointCloud2
+  - Description: Point cloud from Isaac Sim sensors
+  - Publisher: Isaac ROS point cloud processing
+  - Subscribers: Perception and mapping nodes
+
+## Nav2 Navigation Topics
+
+### Navigation Action Topics
+- **/navigate_to_pose/_action/send_goal**
+  - Type: nav2_msgs/action/NavigateToPose_SendGoal
+  - Description: Send navigation goal action
+  - Publisher: Navigation clients
+  - Server: Nav2 BT Navigator
+
+- **/navigate_to_pose/_action/feedback**
+  - Type: nav2_msgs/action/NavigateToPose_FeedbackMessage
+  - Description: Navigation feedback
+  - Publisher: Nav2 BT Navigator
+  - Subscribers: Navigation monitoring nodes
+
+- **/navigate_to_pose/_action/status**
+  - Type: action_msgs/msg/GoalStatusArray
+  - Description: Navigation goal status
+  - Publisher: Nav2 BT Navigator
+  - Subscribers: Navigation monitoring nodes
+
+### Navigation State Topics
+- **/local_costmap/costmap**
+  - Type: nav_msgs/OccupancyGrid
+  - Description: Local costmap for obstacle avoidance
+  - Publisher: Nav2 Local Planner
+  - Subscribers: Visualization and monitoring nodes
+
+- **/global_costmap/costmap**
+  - Type: nav_msgs/OccupancyGrid
+  - Description: Global costmap for path planning
+  - Publisher: Nav2 Global Planner
+  - Subscribers: Visualization and monitoring nodes
+
+- **/local_costmap/costmap_updates**
+  - Type: map_msgs/PointCloud2
+  - Description: Incremental costmap updates
+  - Publisher: Nav2 Costmap
+  - Subscribers: Visualization nodes
+
+### Control Topics
+- **/cmd_vel**
+  - Type: geometry_msgs/Twist
+  - Description: Velocity commands for robot base
+  - Publisher: Nav2 Controller
+  - Subscribers: Robot velocity controller
+
+- **/velocity_smoother/raw_cmd_vel**
+  - Type: geometry_msgs/Twist
+  - Description: Raw velocity commands before smoothing
+  - Publisher: Nav2 Controller
+  - Subscribers: Velocity smoother
+
+## Isaac Sim Services
+
+### Simulation Control Services
+- **/isaac_sim/reset_simulation**
+  - Type: std_srvs/Empty
+  - Description: Reset the Isaac Sim simulation
+
+- **/isaac_sim/pause_simulation**
+  - Type: std_srvs/Empty
+  - Description: Pause the Isaac Sim simulation
+
+- **/isaac_sim/unpause_simulation**
+  - Type: std_srvs/Empty
+  - Description: Resume the Isaac Sim simulation
+
+- **/isaac_sim/set_simulation_settings**
+  - Type: Custom service
+  - Description: Modify simulation parameters during runtime
+
+## Isaac ROS Services
+
+### Perception Services
+- **/isaac_ros/reset_vslam**
+  - Type: std_srvs/Empty
+  - Description: Reset Isaac ROS VSLAM system
+
+- **/isaac_ros/toggle_processing**
+  - Type: std_srvs/SetBool
+  - Description: Enable/disable perception processing
+
+## Nav2 Services
+
+### Navigation Services
+- **/global_costmap/clear_entirely_global_costmap**
+  - Type: std_srvs/Empty
+  - Description: Clear the global costmap
+
+- **/local_costmap/clear_entirely_local_costmap**
+  - Type: std_srvs/Empty
+  - Description: Clear the local costmap
+
+- **/navigate_to_pose/_action/cancel_goal**
+  - Type: action_msgs/srv/CancelGoal
+  - Description: Cancel active navigation goal
+
+### Map Services
+- **/map_server/load_map**
+  - Type: nav2_msgs/srv/LoadMap
+  - Description: Load a new map for navigation
+
+- **/map_saver/save_map**
+  - Type: nav2_msgs/srv/SaveMap
+  - Description: Save the current map
+
+## Isaac Sim Data Structures
+
+### USD Scene Structure
+```
+Scene:
+  - name: string
+  - usd_path: string
+  - prim_path: string
+  - children: list<Prim>
+  - physics_properties: PhysicsProperties
+  - lighting_properties: LightingProperties
+```
+
+### Robot Configuration Structure
+```
+RobotConfig:
+  - name: string
+  - usd_path: string
+  - position: Vector3 [x, y, z]
+  - orientation: Quaternion [x, y, z, w]
+  - drive_type: DriveType (differential, ackermann, etc.)
+  - sensors: list<SensorConfig>
+  - controllers: list<ControllerConfig>
+```
+
+### Sensor Configuration Structure
+```
+SensorConfig:
+  - name: string
+  - type: SensorType (camera, lidar, imu, etc.)
+  - parent_link: string
+  - pose: Pose
+  - parameters: map<string, value>
+  - ros_topic: string
+```
+
+## Isaac ROS Data Structures
+
+### VSLAM Pipeline Configuration
+```
+VSLAMPipeline:
+  - name: string
+  - input_streams: list<InputStream>
+  - feature_detector: FeatureDetectorConfig
+  - tracker: TrackerConfig
+  - mapper: MapperConfig
+  - parameters: VSLAMParameters
+  - output_topics: list<string>
+```
+
+### VSLAM Parameters Structure
+```
+VSLAMParameters:
+  - max_features: int
+  - min_matches: int
+  - relocalization_threshold: float
+  - map_merge_threshold: float
+  - keyframe_threshold: float
+  - bundle_adjustment_enabled: boolean
+  - loop_closure_enabled: boolean
+  - gpu_acceleration: boolean
+```
+
+### Isaac ROS Node Configuration
+```
+IsaacROSNode:
+  - name: string
+  - package: string
+  - executable: string
+  - parameters: map<string, value>
+  - input_topics: list<TopicConfig>
+  - output_topics: list<TopicConfig>
+  - gpu_config: GPUConfig
+```
+
+## Nav2 Configuration Structures
+
+### Navigation Configuration
+```
+NavigationConfig:
+  - robot_radius: float
+  - global_frame: string
+  - robot_base_frame: string
+  - transform_tolerance: float
+  - recovery_enabled: boolean
+  - global_planner: GlobalPlannerConfig
+  - local_planner: LocalPlannerConfig
+  - controller: ControllerConfig
+  - recovery_behaviors: list<RecoveryBehaviorConfig>
+```
+
+### Global Planner Configuration
+```
+GlobalPlannerConfig:
+  - type: string
+  - costmap_topic: string
+  - footprint_topic: string
+  - parameters: map<string, value>
+  - allow_unknown: boolean
+  - planner_frequency: float
+```
+
+### Local Planner Configuration
+```
+LocalPlannerConfig:
+  - type: string
+  - costmap_topic: string
+  - footprint_topic: string
+  - parameters: map<string, value>
+  - controller_frequency: float
+  - velocity_scaling_enabled: boolean
+```
+
+## Isaac Sim-ROS Bridge Configuration
+
+### Bridge Mapping Structure
+```
+BridgeMapping:
+  - omni_topic: string
+  - ros_topic: string
+  - message_type: string
+  - qos_profile: QoSProfile
+  - direction: DirectionType (omni_to_ros, ros_to_omni, bidirectional)
+  - enabled: boolean
+```
+
+### Simulation State Structure
+```
+SimulationState:
+  - timestamp: float64
+  - sim_time: float64
+  - real_time_factor: float64
+  - paused: boolean
+  - entities: map<string, EntityState>
+  - sensors: map<string, SensorState>
+```
+
+### Entity State Structure
+```
+EntityState:
+  - entity_id: string
+  - position: Vector3
+  - orientation: Quaternion
+  - linear_velocity: Vector3
+  - angular_velocity: Vector3
+  - timestamp: float64
+```
+
+## Quality of Service (QoS) Profiles
+
+### Perception Data Profile
+- **Reliability**: Reliable for critical perception data
+- **Durability**: Volatile for sensor streams
+- **History**: Keep last N messages (N varies by topic)
+- **Depth**: 10 for most perception topics
+
+### Navigation Profile
+- **Reliability**: Reliable for navigation commands
+- **Durability**: Volatile for path updates
+- **History**: Keep last 1 for commands
+- **Depth**: 1
+
+### Control Profile
+- **Reliability**: Reliable
+- **Durability**: Volatile
+- **History**: Keep last 1
+- **Depth**: 1
