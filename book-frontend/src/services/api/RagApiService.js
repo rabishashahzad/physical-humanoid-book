@@ -3,28 +3,41 @@
  * Provides methods for querying the backend and managing API configuration
  */
 
+// Function to get backend URL from Docusaurus config or environment
+const getBackendUrl = () => {
+  // In browser environment, try to get from window object or use defaults
+  if (typeof window !== 'undefined' && window.config && window.config.customFields) {
+    return window.config.customFields.backendApiUrl;
+  }
+
+  // For Node.js environment during build
+  if (typeof process !== 'undefined') {
+    return process.env.BACKEND_API_URL ||
+           process.env.REACT_APP_BACKEND_API_URL ||
+           process.env.NEXT_PUBLIC_BACKEND_API_URL ||
+           'http://localhost:8000';
+  }
+
+  // Default fallback
+  return 'http://localhost:8000';
+};
+
 // Environment-specific default configurations
 const ENV_CONFIGS = {
   development: {
-    backendUrl: (typeof process !== 'undefined' ? process.env.BACKEND_API_URL : null) || 'http://localhost:8000',
+    backendUrl: getBackendUrl(),
     timeout: 30000, // 30 seconds for development
     retries: 3,
     environment: 'development'
   },
   staging: {
-    backendUrl: (typeof process !== 'undefined' ? process.env.BACKEND_API_URL : null) ||
-               (typeof process !== 'undefined' ? process.env.REACT_APP_BACKEND_API_URL : null) ||
-               (typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_BACKEND_API_URL : null) ||
-               'https://staging-api.example.com',
+    backendUrl: getBackendUrl(),
     timeout: 20000, // 20 seconds for staging
     retries: 2,
     environment: 'staging'
   },
   production: {
-    backendUrl: (typeof process !== 'undefined' ? process.env.BACKEND_API_URL : null) ||
-               (typeof process !== 'undefined' ? process.env.REACT_APP_BACKEND_API_URL : null) ||
-               (typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_BACKEND_API_URL : null) ||
-               'https://api.example.com',
+    backendUrl: getBackendUrl(),
     timeout: 15000, // 15 seconds for production
     retries: 1,
     environment: 'production'
@@ -33,6 +46,13 @@ const ENV_CONFIGS = {
 
 // Get the current environment
 const getCurrentEnvironment = () => {
+  // First, try to get environment from window.config if available (Docusaurus)
+  if (typeof window !== 'undefined' && window.config && window.config.customFields) {
+    if (window.config.customFields.environment) {
+      return window.config.customFields.environment;
+    }
+  }
+
   if (typeof window !== 'undefined') {
     // Client-side environment detection
     const hostname = window.location.hostname;
@@ -59,7 +79,18 @@ class RagApiService {
   constructor(config = {}) {
     // Get default config based on environment and merge with provided config
     const defaultConfig = getDefaultConfig();
-    this.config = { ...defaultConfig, ...config };
+
+    // If in browser and we have access to docusaurus config, try to use it
+    let finalConfig = { ...defaultConfig, ...config };
+
+    if (typeof window !== 'undefined' && window.config && window.config.customFields) {
+      // Override with values from docusaurus config if available
+      if (window.config.customFields.backendApiUrl) {
+        finalConfig.backendUrl = window.config.customFields.backendApiUrl;
+      }
+    }
+
+    this.config = finalConfig;
 
     // Validate backend URL format
     try {
