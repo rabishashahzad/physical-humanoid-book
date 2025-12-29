@@ -10,11 +10,11 @@ const getBackendUrl = () => {
     return window.config.customFields.backendApiUrl;
   }
 
-  // For Node.js environment during build
+  // For Node.js environment during build, prioritize NEXT_PUBLIC_ for Vercel
   if (typeof process !== 'undefined') {
-    return process.env.BACKEND_API_URL ||
+    return process.env.NEXT_PUBLIC_BACKEND_API_URL ||
            process.env.REACT_APP_BACKEND_API_URL ||
-           process.env.NEXT_PUBLIC_BACKEND_API_URL ||
+           process.env.BACKEND_API_URL ||
            'http://localhost:8000';
   }
 
