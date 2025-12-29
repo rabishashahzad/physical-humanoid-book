@@ -210,6 +210,8 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
 
 ## Active Technologies
+- JavaScript/TypeScript for frontend, Python 3.11 for backend + Docusaurus framework for frontend, FastAPI for backend, HTTP client libraries (axios/fetch) (004-backend-frontend-integration)
+- N/A (no new storage - uses existing backend Qdrant and frontend static files) (004-backend-frontend-integration)
 
 - Python 3.11 + FastAPI (002-book-rag-chatbot)
 - React + TypeScript (002-book-rag-chatbot)
@@ -245,7 +247,7 @@ cd src; pytest; ruff check .
 Python 3.11: Follow standard conventions
 
 ## Recent Changes
+- 004-backend-frontend-integration: Added JavaScript/TypeScript for frontend, Python 3.11 for backend + Docusaurus framework for frontend, FastAPI for backend, HTTP client libraries (axios/fetch)
 
 - 002-book-rag-chatbot: Added Python 3.11 + FastAPI
 - 002-book-rag-chatbot: Added React + TypeScript
-- 001-ui-improvement: Added React + Docusaurus

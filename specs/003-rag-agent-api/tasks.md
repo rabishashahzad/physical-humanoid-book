@@ -44,13 +44,13 @@ MVP approach: Implement User Story 1 first (API query handling), then add User S
 **Independent Test Criteria**: Can send a query to the API endpoint and verify that a response is returned based on the retrieved context from the book.
 
 - [X] T011 [US1] Create agent.py file with FastAPI application
-- [ ] T012 [US1] Implement /query endpoint to receive user queries
-- [ ] T013 [US1] Implement basic request validation and parsing
-- [ ] T014 [US1] Implement response formatting for API responses
-- [ ] T015 [US1] Add error handling for API requests
-- [ ] T016 [US1] Implement /health endpoint for service monitoring
-- [ ] T017 [US1] Test basic API functionality with sample query
-- [ ] T018 [US1] Add request/response logging
+- [X] T012 [US1] Implement /query endpoint to receive user queries
+- [X] T013 [US1] Implement basic request validation and parsing
+- [X] T014 [US1] Implement response formatting for API responses
+- [X] T015 [US1] Add error handling for API requests
+- [X] T016 [US1] Implement /health endpoint for service monitoring
+- [x] T017 [US1] Test basic API functionality with sample query
+- [x] T018 [US1] Add request/response logging
 
 ## Phase 4: [US2] Integrate Vector Retrieval into Agent Reasoning
 
@@ -58,13 +58,13 @@ MVP approach: Implement User Story 1 first (API query handling), then add User S
 
 **Independent Test Criteria**: Send queries and verify that the agent retrieves and uses relevant context from the Qdrant collection.
 
-- [ ] T019 [US2] Implement context retrieval function using Qdrant client
-- [ ] T020 [US2] Integrate Cohere embedding generation for query processing
-- [ ] T021 [US2] Implement context injection into Gemini prompts
-- [ ] T022 [US2] Create structured prompt format for context integration
-- [ ] T023 [US2] Add source chunk tracking to responses
-- [ ] T024 [US2] Implement grounding verification for responses
-- [ ] T025 [US2] Test retrieval and integration with sample queries
+- [x] T019 [US2] Implement context retrieval function using Qdrant client
+- [x] T020 [US2] Integrate Cohere embedding generation for query processing
+- [x] T021 [US2] Implement context injection into Gemini prompts
+- [x] T022 [US2] Create structured prompt format for context integration
+- [x] T023 [US2] Add source chunk tracking to responses
+- [x] T024 [US2] Implement grounding verification for responses
+- [x] T025 [US2] Test retrieval and integration with sample queries
 
 ## Phase 5: [US3] Manage Agent Configuration and Lifecycle
 
@@ -72,21 +72,21 @@ MVP approach: Implement User Story 1 first (API query handling), then add User S
 
 **Independent Test Criteria**: Verify that the agent can be properly initialized with configuration from environment variables.
 
-- [ ] T026 [US3] Implement configuration validation at startup
-- [ ] T027 [US3] Add service connection validation for Gemini, Qdrant, and Cohere
-- [ ] T028 [US3] Create agent initialization and cleanup procedures
-- [ ] T029 [US3] Implement error handling for service unavailability
-- [ ] T030 [US3] Add retry logic for transient failures
-- [ ] T031 [US3] Create configuration reload functionality if needed
-- [ ] T032 [US3] Test complete agent lifecycle with configuration
+- [x] T026 [US3] Implement configuration validation at startup
+- [x] T027 [US3] Add service connection validation for Gemini, Qdrant, and Cohere
+- [x] T028 [US3] Create agent initialization and cleanup procedures
+- [x] T029 [US3] Implement error handling for service unavailability
+- [x] T030 [US3] Add retry logic for transient failures
+- [x] T031 [US3] Create configuration reload functionality if needed
+- [x] T032 [US3] Test complete agent lifecycle with configuration
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T033 Add comprehensive error handling for all API endpoints
-- [ ] T034 Implement proper response time monitoring and metrics
-- [ ] T035 Add input validation for query text and parameters
-- [ ] T036 Handle edge cases: no relevant matches, long queries, API errors
-- [ ] T037 Create comprehensive README with usage instructions
-- [ ] T038 Add performance optimization for faster response times
-- [ ] T039 Run complete validation test suite
-- [ ] T040 Document the agent API and integration process
+- [x] T033 Add comprehensive error handling for all API endpoints
+- [x] T034 Implement proper response time monitoring and metrics
+- [x] T035 Add input validation for query text and parameters
+- [x] T036 Handle edge cases: no relevant matches, long queries, API errors
+- [x] T037 Create comprehensive README with usage instructions
+- [x] T038 Add performance optimization for faster response times
+- [x] T039 Run complete validation test suite
+- [x] T040 Document the agent API and integration process

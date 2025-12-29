@@ -77,6 +77,35 @@ const config = {
     ],
   ],
 
+  customFields: {
+    backendApiUrl: process.env.BACKEND_API_URL ||
+                  process.env.REACT_APP_BACKEND_API_URL ||
+                  process.env.NEXT_PUBLIC_BACKEND_API_URL ||
+                  'http://localhost:8000',
+    environment: process.env.NODE_ENV ||
+                 (typeof window !== 'undefined' && window.location.hostname.includes('localhost') ? 'development' : 'production'),
+    environmentConfig: {
+      development: {
+        backendApiUrl: process.env.BACKEND_API_URL || 'http://localhost:8000',
+        timeout: 30000,
+      },
+      staging: {
+        backendApiUrl: process.env.BACKEND_API_URL ||
+                      process.env.REACT_APP_BACKEND_API_URL ||
+                      process.env.NEXT_PUBLIC_BACKEND_API_URL ||
+                      'https://staging-api.example.com',
+        timeout: 20000,
+      },
+      production: {
+        backendApiUrl: process.env.BACKEND_API_URL ||
+                      process.env.REACT_APP_BACKEND_API_URL ||
+                      process.env.NEXT_PUBLIC_BACKEND_API_URL ||
+                      'https://api.example.com',
+        timeout: 15000,
+      }
+    }
+  },
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
