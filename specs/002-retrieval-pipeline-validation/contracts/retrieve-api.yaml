@@ -1,0 +1,131 @@
+# API Contract: Retrieval Pipeline Validation
+
+openapi: 3.0.0
+info:
+  title: Retrieval Pipeline Validation API
+  version: 1.0.0
+  description: API contract for validating the retrieval pipeline functionality
+
+paths:
+  /validate-retrieval:
+    post:
+      summary: Validate retrieval pipeline with test query
+      description: Performs embedding generation and similarity search to validate retrieval functionality
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query_text:
+                  type: string
+                  description: The query text to validate retrieval against
+                  example: "What does the book say about artificial intelligence?"
+                expected_topic:
+                  type: string
+                  description: The expected topic for validation
+                  example: "artificial intelligence"
+                top_k:
+                  type: integer
+                  description: Number of results to retrieve
+                  default: 5
+                  example: 5
+                collection_name:
+                  type: string
+                  description: Qdrant collection to search against
+                  default: "book_chunks"
+                  example: "book_chunks"
+              required:
+                - query_text
+      responses:
+        '200':
+          description: Validation results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query_text:
+                    type: string
+                    description: The original query text
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                          description: The retrieved chunk text
+                        url:
+                          type: string
+                          description: Source URL of the chunk
+                        chunk_index:
+                          type: integer
+                          description: Index of the chunk in the source
+                        score:
+                          type: number
+                          description: Similarity score for the result
+                        expected_topic:
+                          type: string
+                          description: The expected topic for this result
+                  execution_time:
+                    type: number
+                    description: Time taken for the retrieval operation in seconds
+                  is_valid:
+                    type: boolean
+                    description: Whether the results meet validation criteria
+                  relevance_accuracy:
+                    type: number
+                    description: Calculated relevance score
+        '400':
+          description: Bad request - invalid input parameters
+        '500':
+          description: Internal server error - retrieval failed
+
+components:
+  schemas:
+    ValidationResult:
+      type: object
+      properties:
+        query:
+          type: string
+          description: The original query text
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RetrievedChunk'
+        is_valid:
+          type: boolean
+          description: Whether validation passed
+        execution_time:
+          type: number
+          format: float
+          description: Time taken in seconds
+      required:
+        - query
+        - results
+        - is_valid
+        - execution_time
+
+    RetrievedChunk:
+      type: object
+      properties:
+        text:
+          type: string
+          description: The retrieved chunk text
+        url:
+          type: string
+          description: Source URL
+        chunk_index:
+          type: integer
+          description: Index of the chunk
+        score:
+          type: number
+          format: float
+          description: Similarity score
+      required:
+        - text
+        - url
+        - chunk_index
+        - score
