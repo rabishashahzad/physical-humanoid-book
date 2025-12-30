@@ -3,6 +3,7 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
+import RagQueryComponent from '@site/src/components/RagQuery/RagQueryComponent';
 
 import Heading from '@theme/Heading';
 import styles from './index.module.css';
@@ -23,11 +24,6 @@ function HomepageHeader() {
               to="/docs/intro">
               Get Started - 5min ⏱️
             </Link>
-            <Link
-              className="button button--primary button--lg"
-              to="/docs/category/tutorials">
-              Browse Docs
-            </Link>
           </div>
         </div>
       </div>
@@ -44,6 +40,9 @@ export default function Home() {
       <HomepageHeader />
       <main>
         <HomepageFeatures />
+        <div className="container">
+          <RagQueryComponent />
+        </div>
       </main>
     </Layout>
   );

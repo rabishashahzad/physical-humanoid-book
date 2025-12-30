@@ -10,8 +10,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
+  title: 'Physical Humanoid Robotic',
+  tagline: 'Advanced robotics and humanoid technology',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -77,6 +77,35 @@ const config = {
     ],
   ],
 
+  customFields: {
+    backendApiUrl: process.env.BACKEND_API_URL ||
+                  process.env.REACT_APP_BACKEND_API_URL ||
+                  process.env.NEXT_PUBLIC_BACKEND_API_URL ||
+                  'https://physical-humanoid-book-backend-production.up.railway.app', // Production backend URL
+    environment: process.env.NODE_ENV ||
+                 (typeof window !== 'undefined' && window.location.hostname.includes('localhost') ? 'development' : 'production'),
+    environmentConfig: {
+      development: {
+        backendApiUrl: process.env.BACKEND_API_URL || 'http://localhost:8000',
+        timeout: 30000,
+      },
+      staging: {
+        backendApiUrl: process.env.BACKEND_API_URL ||
+                      process.env.REACT_APP_BACKEND_API_URL ||
+                      process.env.NEXT_PUBLIC_BACKEND_API_URL ||
+                      'https://staging-api.example.com',
+        timeout: 20000,
+      },
+      production: {
+        backendApiUrl: process.env.BACKEND_API_URL ||
+                      process.env.REACT_APP_BACKEND_API_URL ||
+                      process.env.NEXT_PUBLIC_BACKEND_API_URL ||
+                      'https://physical-humanoid-book-backend-production.up.railway.app', // Production backend URL
+        timeout: 15000,
+      }
+    }
+  },
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
@@ -86,9 +115,9 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'Book Frontend',
+        title: 'Physical Humanoid Robotic',
         logo: {
-          alt: 'Book Frontend Logo',
+          alt: 'Physical Humanoid Robotic Logo',
           src: 'img/logo.svg',
           width: 32,
           height: 32,
@@ -156,7 +185,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Physical Humanoid Robotic. Built with Docusaurus.`,
       },
       prism: {
         theme: prismThemes.github,

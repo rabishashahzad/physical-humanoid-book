@@ -1,0 +1,156 @@
+# API Contract: RAG Agent API
+
+openapi: 3.0.0
+info:
+  title: RAG Agent API
+  version: 1.0.0
+  description: API for interacting with the RAG-enabled agent that retrieves context from Qdrant
+
+paths:
+  /query:
+    post:
+      summary: Query the RAG agent with user input
+      description: Sends a user query to the RAG agent, which retrieves relevant context from Qdrant and generates a grounded response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: The user's query text
+                  example: "What does the book say about artificial intelligence?"
+                user_id:
+                  type: string
+                  description: Optional user identifier for tracking
+                  example: "user123"
+              required:
+                - query
+      responses:
+        '200':
+          description: Successful response from the agent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    description: The agent's response to the query
+                  source_chunks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                          description: Source URL of the book content
+                        chunk_index:
+                          type: integer
+                          description: Index of the chunk in the source
+                        text:
+                          type: string
+                          description: Preview of the chunk text
+                        score:
+                          type: number
+                          description: Similarity score for the chunk
+                  execution_time:
+                    type: number
+                    description: Time taken to process the request in seconds
+                  grounded:
+                    type: boolean
+                    description: Whether the response is grounded in retrieved context
+        '400':
+          description: Bad request - invalid input parameters
+        '500':
+          description: Internal server error - agent or retrieval service unavailable
+
+  /health:
+    get:
+      summary: Health check for the agent service
+      description: Returns the health status of the agent and its dependencies
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Health status
+                    example: "healthy"
+                  dependencies:
+                    type: object
+                    properties:
+                      openai:
+                        type: string
+                        description: Status of OpenAI API connection
+                      qdrant:
+                        type: string
+                        description: Status of Qdrant connection
+                      cohere:
+                        type: string
+                        description: Status of Cohere API connection
+
+components:
+  schemas:
+    QueryRequest:
+      type: object
+      properties:
+        query:
+          type: string
+          description: The user's query text
+        user_id:
+          type: string
+          description: Optional user identifier
+      required:
+        - query
+
+    QueryResponse:
+      type: object
+      properties:
+        response:
+          type: string
+          description: The agent's response to the query
+        source_chunks:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceChunk'
+        execution_time:
+          type: number
+          format: float
+          description: Time taken to process the request in seconds
+        grounded:
+          type: boolean
+          description: Whether the response is grounded in retrieved context
+      required:
+        - response
+        - source_chunks
+        - execution_time
+        - grounded
+
+    SourceChunk:
+      type: object
+      properties:
+        url:
+          type: string
+          description: Source URL of the book content
+        chunk_index:
+          type: integer
+          description: Index of the chunk in the source
+        text:
+          type: string
+          description: Preview of the chunk text
+        score:
+          type: number
+          format: float
+          description: Similarity score for the chunk
+      required:
+        - url
+        - chunk_index
+        - text
+        - score
