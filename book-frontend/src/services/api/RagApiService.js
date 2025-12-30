@@ -7,19 +7,23 @@
 const getBackendUrl = () => {
   // In browser environment, try to get from window object or use defaults
   if (typeof window !== 'undefined' && window.config && window.config.customFields) {
-    return window.config.customFields.backendApiUrl;
+    // Access the backend API URL from Docusaurus config
+    const config = window.config.customFields;
+    return config.backendApiUrl ||
+           config.environmentConfig?.[config.environment]?.backendApiUrl ||
+           'https://physical-humanoid-book-backend-production.up.railway.app'; // Production backend URL
   }
 
   // For Node.js environment during build, prioritize NEXT_PUBLIC_ for Vercel
-  if (typeof process !== 'undefined') {
+  if (typeof process !== 'undefined' && process.env) {
     return process.env.NEXT_PUBLIC_BACKEND_API_URL ||
            process.env.REACT_APP_BACKEND_API_URL ||
            process.env.BACKEND_API_URL ||
-           'http://localhost:8000';
+           'https://physical-humanoid-book-backend-production.up.railway.app'; // Production backend URL
   }
 
   // Default fallback
-  return 'http://localhost:8000';
+  return 'https://physical-humanoid-book-backend-production.up.railway.app'; // Production backend URL
 };
 
 // Environment-specific default configurations
@@ -230,9 +234,26 @@ class RagApiService {
       } catch (error) {
         lastError = error;
 
-        // If this was the last attempt, throw the error
-        if (attempt === maxRetries) {
-          break;
+        // Check if this is a network error (fetch failed completely)
+        if (error.name === 'TypeError' || error.message.includes('fetch') || error.message.includes('network') || error.name === 'AbortError') {
+          console.warn(`Network error on attempt ${attempt + 1}:`, error.message);
+
+          // If this was the last attempt, throw the error
+          if (attempt === maxRetries) {
+            const networkError = new Error('Network error: Unable to connect to the backend service. Please check your connection and try again later.');
+            networkError.request = true;
+            networkError.response = {
+              status: 0,
+              data: { error: 'Network error', message: error.message },
+              statusText: 'Network Error'
+            };
+            throw networkError;
+          }
+        } else {
+          // If this was the last attempt, throw the error
+          if (attempt === maxRetries) {
+            break;
+          }
         }
 
         // Wait before retrying (exponential backoff)

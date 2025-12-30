@@ -81,7 +81,7 @@ const config = {
     backendApiUrl: process.env.BACKEND_API_URL ||
                   process.env.REACT_APP_BACKEND_API_URL ||
                   process.env.NEXT_PUBLIC_BACKEND_API_URL ||
-                  'http://localhost:8000',
+                  'https://physical-humanoid-book-backend-production.up.railway.app', // Production backend URL
     environment: process.env.NODE_ENV ||
                  (typeof window !== 'undefined' && window.location.hostname.includes('localhost') ? 'development' : 'production'),
     environmentConfig: {
@@ -100,7 +100,7 @@ const config = {
         backendApiUrl: process.env.BACKEND_API_URL ||
                       process.env.REACT_APP_BACKEND_API_URL ||
                       process.env.NEXT_PUBLIC_BACKEND_API_URL ||
-                      'https://api.example.com',
+                      'https://physical-humanoid-book-backend-production.up.railway.app', // Production backend URL
         timeout: 15000,
       }
     }

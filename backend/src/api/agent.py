@@ -86,6 +86,9 @@ app.add_middleware(
         "http://127.0.0.1:3001",    # Alternative localhost format
         "http://127.0.0.1:3002",    # Alternative localhost format
         "https://your-docusaurus-site.example.com",  # Production domain (to be configured)
+        "https://*.vercel.app",      # Vercel deployment domains
+        "https://*.vercel.com",      # Vercel deployment domains
+        "https://physicalhumanoidaitextbook.vercel.app",  # Specific deployment URL
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
