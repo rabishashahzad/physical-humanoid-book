@@ -69,10 +69,37 @@ const config = {
         },
         theme: {
           customCss: [
+            require.resolve('./src/css/custom.css'),
+            require.resolve('./src/css/theme.css'),
+            require.resolve('./src/css/enhanced-theme.css'), // Enhanced theme CSS
+          ],
+        },
+      }),
+    ],
+  ],
+          // Remove this to remove the "edit this page" links.
+          editUrl:
+            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+        },
+        blog: {
+          showReadingTime: true,
+          feedOptions: {
+            type: ['rss', 'atom'],
+            xslt: true,
+          },
+          // Please change this to your repo.
+          // Remove this to remove the "edit this page" links.
+          editUrl:
+            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          // Useful options to enforce blogging best practices
+          onInlineTags: 'warn',
+          onInlineAuthors: 'warn',
+          onUntruncatedBlogPosts: 'warn',
+        },
+        theme: {
+          customCss: [
             './src/css/custom.css',
-            './src/css/theme.css',
-            './src/css/enhanced-theme.css', // Enhanced theme CSS
-            './src/css/advanced-theme.css'  // Advanced theme CSS with sophisticated animations
+            './src/css/theme.css'
           ],
         },
       }),
@@ -105,7 +132,8 @@ const config = {
                       'https://physical-humanoid-book-backend-production.up.railway.app', // Production backend URL
         timeout: 15000,
       }
-    }
+    },
+    themeCSS: '/src/css/enhanced-theme.css'
   },
 
   stylesheets: [
